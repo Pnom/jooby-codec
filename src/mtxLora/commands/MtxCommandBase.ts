@@ -1,9 +1,10 @@
-import Command, {TCommandExampleList, COMMAND_HEADER_SIZE} from '../Command.js';
+import Command, {ICommandBinary, TCommandExampleList} from '../Command.js';
 import CommandBinaryBuffer, {IMtxCommand} from '../CommandBinaryBuffer.js';
 import getBytesFromHex from '../../utils/getBytesFromHex.js';
 
 
 const COMMAND_ID = 0x1e;
+const COMMAND_HEADER_SIZE = 2;
 
 
 const examples: TCommandExampleList = [
@@ -27,8 +28,6 @@ const examples: TCommandExampleList = [
 export default class MtxCommandBase extends Command {
     constructor ( public parameters: IMtxCommand ) {
         super();
-
-        this.size = 2 + parameters.data.length;
     }
 
     static readonly id = COMMAND_ID;
@@ -37,25 +36,21 @@ export default class MtxCommandBase extends Command {
 
     static readonly hasParameters = true;
 
-    // returns full message - header with body
-    toBytes (): Uint8Array {
-        const {size, parameters} = this;
-        const buffer = new CommandBinaryBuffer(COMMAND_HEADER_SIZE + size);
-
-        // header + size
-        buffer.setUint8(COMMAND_ID);
-        buffer.setUint8(size);
-
-        // body
-        buffer.setMtxCommand(parameters);
-
-        return buffer.toUint8Array();
-    }
-
     // data - only body (without header)
     static fromBytes ( data: Uint8Array ) {
         const buffer = new CommandBinaryBuffer(data);
 
         return new this(buffer.getMtxCommand());
+    }
+
+    // returns full message - header with body
+    toBinary (): ICommandBinary {
+        const {parameters} = this;
+        const buffer = new CommandBinaryBuffer(COMMAND_HEADER_SIZE + parameters.data.length);
+
+        // body
+        buffer.setMtxCommand(parameters);
+
+        return Command.toBinary(COMMAND_ID, buffer.toUint8Array());
     }
 }
