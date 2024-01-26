@@ -1,6 +1,9 @@
 import Command, {TCommandExampleList, ICommandBinary} from '../Command.js';
 import CommandBinaryBuffer, {IDataSegment} from '../CommandBinaryBuffer.js';
 import getBytesFromHex from '../../utils/getBytesFromHex.js';
+import {getEncodingFromBytes} from '../../utils/bytesEncoding.js';
+import {IHexFormatOptions} from '../../config.js';
+import {TBytesEncodeFormat, HEX} from '../../utils/constants/bytesEncodeFormat.js';
 
 
 const COMMAND_ID = 0x1e;
@@ -49,5 +52,14 @@ export default class DataSegmentBase extends Command {
         const buffer = new CommandBinaryBuffer(data);
 
         return new this(buffer.getDataSegment());
+    }
+
+    toJson ( encodeFormat: TBytesEncodeFormat = HEX, hexFormat: IHexFormatOptions = {} ) {
+        const {parameters} = this;
+
+        return JSON.stringify({
+            ...parameters,
+            data: getEncodingFromBytes(parameters.data, encodeFormat, hexFormat)
+        });
     }
 }
