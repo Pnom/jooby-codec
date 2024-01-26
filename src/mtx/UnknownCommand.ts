@@ -1,4 +1,7 @@
 import Command from './Command.js';
+import {getEncodingFromBytes} from '../utils/bytesEncoding.js';
+import {IHexFormatOptions} from '../config.js';
+import {TBytesEncodeFormat, HEX} from '../utils/constants/bytesEncodeFormat.js';
 
 
 /**
@@ -34,6 +37,15 @@ class UnknownCommand extends Command {
         const {id, size, data} = this.parameters;
 
         return new Uint8Array([id, size, ...data]);
+    }
+
+    toJson ( encodeFormat: TBytesEncodeFormat = HEX, hexFormat: IHexFormatOptions = {} ) {
+        const {id, data} = this.parameters;
+
+        return JSON.stringify({
+            id,
+            data: getEncodingFromBytes(data, encodeFormat, hexFormat)
+        });
     }
 }
 

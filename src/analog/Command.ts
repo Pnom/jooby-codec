@@ -1,8 +1,9 @@
 import * as header from './header.js';
-import {IHexFormatOptions} from '../config.js';
 import getHexFromBytes from '../utils/getHexFromBytes.js';
 import getHexFromNumber from '../utils/getHexFromNumber.js';
 import getBase64FromBytes from '../utils/getBase64FromBytes.js';
+import {IHexFormatOptions} from '../config.js';
+import {TBytesEncodeFormat, HEX} from '../utils/constants/bytesEncodeFormat.js';
 
 
 export interface ICommandExample {
@@ -145,7 +146,8 @@ abstract class Command {
      *
      * @returns JSON string contains current parameters
      */
-    toJson () {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    toJson ( encodeFormat: TBytesEncodeFormat = HEX, hexFormat: IHexFormatOptions = {} ) {
         return JSON.stringify(this.getParameters());
     }
 }
