@@ -73,6 +73,22 @@ export const fromBase64 = ( data: string ) => (
     fromBytes(getBytesFromBase64(data))
 );
 
+export const toMessage = ( commands: Array<Command> ): IMessage => {
+    const commandsBinary = commands.map(command => ({
+        command,
+        bytes: command.toBytes()
+    }));
+
+    const messageBytes = new Uint8Array(
+        commandsBinary.flatMap(({bytes}) => Array.from(bytes))
+    );
+
+    return {
+        commands: commandsBinary,
+        bytes: messageBytes
+    };
+};
+
 export const toBytes = ( commands: Array<Command> ): Uint8Array => {
     const commandBytes = commands.map(command => command.toBytes());
 
